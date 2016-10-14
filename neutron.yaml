@@ -1,0 +1,20 @@
+NeutronNetworks.create_and_delete_networks_subnets_ports:
+    -
+      args:
+        network_create_args: {}
+        subnet_create_args: {}
+        subnet_cidr_start: "1.1.0.0/30"
+        subnets_per_network: 2
+        port_create_args: {}
+        ports_per_network: 5
+      context:
+        {% call user_context(tenants_amount, users_amount, use_existing_users) %}
+        quotas:
+        neutron:
+          network: -1
+          subnet: -1
+          port: -1
+      runner:
+        {{ constant_runner(concurrency=2*controllers_amount, times=8*controllers_amount, is_smoke=smoke) }}
+      sla:
+        {{ no_failures_sla() }}
